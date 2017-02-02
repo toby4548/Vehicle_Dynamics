@@ -1,0 +1,93 @@
+%
+%  Cornering Vehicle Dynamics Simulation
+%
+%  Created by I.Chen and Y.Huang in 2015.
+%  Copyright (c) 2015 All rights reserved.
+% 
+
+
+% VD_Main
+TD_type : transmission device type (1) Open Differential; (2) Locked Axle;
+kmh2ms = 1000/60/60; % [km/h]->[m/s]
+rpm2rs = 2*pi/60; % [rpm]->[r/s]
+deg2rad = pi/180; % [degree]->[rad]
+v_ini : initial vehicle speed (km/h)
+delta_f_c : current front wheel steering angle (degree)
+u_c : current vehicle longitudial speed (m/s) (+ : front)
+v_c : current vehicle lateral speed (m/s) (+ : left)
+r_c : current vehicle yaw rate (rad/s) (+ : conterclockwise)
+du : vehicle longitudial acceleration (m/s^2)
+dv : vehicle lateral acceleration (m/s^2)
+dr : vehicle yaw acceleration (rad/s^2)
+dt : simulation time step (s)
+slip_time : wheel starts to slip timming in simulation (s)
+turning_time : vehicle starts to turn timming in simulation (s)
+final_time : simulation duration (s)
+n : simulation step number
+
+
+% car_spec
+m_car : total weight of vehicle (kg)
+r_w : wheel radius (m)
+I_w : inertia of each wheel  (kgm^2)
+I_c : inertia of carrier and powertrain (kgm^2)
+I_z : yaw inertia (kgm^2)
+l : wheel base (m)
+l_a : distance between vehicle mass center to front wheel axle (m)
+l_b : distance between vehicle mass center to rear wheel axle (m)
+l_h : vehicle mass center height (m)
+l_d : vehicle width
+c_d : aerodynamic resistance coefficient
+rho_a : % air density
+A_f : vehicle frontal area
+c_r : coefficient of rolling resistance
+g : gravity
+g_2L : differential gear teeth number of rear left wheel
+g_2R : differential gear teeth number of rear right wheel
+
+
+% p0_initial
+R_r_c = m_car*g*c_r;
+R_a_c = 1/2*c_d*rho_a*A_f*u_c^2;
+R_total_c = R_r_c + R_a_c;
+% Normal Load of Each Tire
+F_n_1L_c = [(1/l*[m_car*g*l_b+l_h*(m_car*du-R_a_c)])*l_d/2-m_car*dv*l_h]/l_d;
+F_n_1R_c = [(1/l*[m_car*g*l_b+l_h*(m_car*du-R_a_c)])*l_d/2+m_car*dv*l_h]/l_d; 
+F_n_2L_c = [(1/l*[m_car*g*l_a-l_h*(m_car*du-R_a_c)])*l_d/2-m_car*dv*l_h]/l_d; 
+F_n_2R_c = [(1/l*[m_car*g*l_a-l_h*(m_car*du-R_a_c)])*l_d/2+m_car*dv*l_h]/l_d; 
+% Build Tire Slip vs Traction Table for each tire
+List_itc_2L_c = (interp2(List_F_nt,List_i_s,Table_F_tc,F_n_2L_c,List_i_s))';
+List_itc_2R_c = (interp2(List_F_nt,List_i_s,Table_F_tc,F_n_2R_c,List_i_s))'; 
+% Interpolate Resistance(Traction) to Find Tire Slip Ratio
+i_s_2L_c : current tire slip ratio of rear left tire
+i_s_2R_c : current tire slip ratio of rear right tire
+F_tc_2L_c : current traction force of rear left tire
+F_tc_2R_c : current traction force of rear right tire
+W_w2L_c : wheel speed of rear left wheel (rad/s)
+W_w2R_c : wheel speed of rear right wheel (rad/s)
+F_totaltc_c : total traction effort (N)
+T_totaltc_c : total traction torque (Nm)
+T_in_c : system input torque (Nm)
+
+
+% p1_Driver
+delta_f_c : front wheel steering angle (degree) (positive + : trun left; negative - : turn right)
+
+
+% p2_Traction
+R_r_c : current rolling resistance (N)
+R_a_c : current air drag (N)
+R_total_c : current total resistance (N)
+F_n_1L_c : current tire normal force for front left tire (N)
+F_n_1R_c : current tire normal force for front right tire (N)
+F_n_2L_c : current tire normal force for rear left tire (N)
+F_n_2R_c : current tire normal force for rear right tire (N)
+
+% p3_VD
+
+
+% p4_Trajectory
+
+
+
+
